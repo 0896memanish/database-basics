@@ -133,6 +133,18 @@ select * from departments_dup;
 
 INSERT INTO departments VALUES ('d010', 'Business Analysis');
 
+#UPDATE table_name command
+update departments
+set dept_name='Data Analysis'
+where dept_name='Business Analysis';
+
+select * from departments;
+
+#DELETE command
+delete from departments where dept_no='d010';
+select * from departments;
+
+
 
 
 
