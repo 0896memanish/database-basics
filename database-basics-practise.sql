@@ -81,6 +81,25 @@ where salary > 80000
 group by salary
 order by salary;
 
+#Having
+select avg(salary)
+from salaries 
+group by emp_no
+having avg(salary) > 120000
+order by avg(salary) asc;
+
+
+select emp_no
+from dept_emp
+where from_date > '2000-01-01'
+group by emp_no
+having count(from_date) > 1;
+
+#LIMIT
+select * from dept_emp limit 100;
+
+
+
 
 
 
