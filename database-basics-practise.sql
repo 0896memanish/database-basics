@@ -145,6 +145,49 @@ delete from departments where dept_no='d010';
 select * from departments;
 
 
+#AGGREGATE
+select count(DISTINCT dept_no)
+from dept_emp;
+
+select sum(salary)
+from salaries
+where from_date > '1997-01-01';
+
+select min(emp_no) from employees;
+select max(emp_no) from employees;
+
+select avg(salary) 
+from salaries
+where from_date > '1997-01-01';
+
+select round(avg(salary),2)
+from salaries
+where from_date > '1997-01-01';
+
+select * from departments_dup;
+
+alter table departments_dup
+change dept_name dept_name VARCHAR(20) NULL;
+
+insert into departments_dup (dept_no) values ('d010'), ('d011');
+
+alter table departments_dup
+add column dept_manager varchar(200) NULL after dept_name;
+
+select dept_no, dept_name, ifnull(dept_no, dept_name) as dept_info
+from departments_dup
+order by dept_no asc;
+
+select 
+ ifnull(dept_no, 'N/A') as dept_no,
+ ifnull(dept_name, 'department name is not provided') as dept_name,
+ coalesce(dept_no, dept_name) as dept_info
+from departments_dup
+order by dept_no asc;
+
+
+
+
 
 
 
