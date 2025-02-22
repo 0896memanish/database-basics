@@ -99,6 +99,39 @@ having count(from_date) > 1;
 select * from dept_emp limit 100;
 
 
+#INSERT commands
+INSERT INTO employees
+VALUES
+(
+    999903,
+    '1977-09-14',
+    'Johnathan',
+    'Creek',
+    'M',
+    '1999-01-01'
+);
+
+select * from titles limit 10;
+insert into titles (emp_no, title, from_date)
+values (999903, 'Senior Engineer', '1997-10-01');
+
+select * from titles order by emp_no desc limit 10;
+
+insert into dept_emp values (999903,'d005', '1997-10-01', '9999-01-01');
+select * from dept_emp order by emp_no desc limit 10;
+
+#INSERT INTO TABLE using existing table
+create table departments_dup (
+	dept_no varchar(4) NOT NULL,
+    dept_name varchar(200) NOT NULL
+);
+
+insert into departments_dup (dept_no, dept_name)
+select * from departments;
+
+select * from departments_dup;
+
+INSERT INTO departments VALUES ('d010', 'Business Analysis');
 
 
 
