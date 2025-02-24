@@ -308,16 +308,24 @@ CREATE TABLE emp_manager (
    manager_no INT(11) NOT NULL
 );
 
-select e.emp_no as employee_ID, min(de.dept_no) as department_ID, 
-	(select emp_no from dept_manager where emp_no=110022) as manager_ID
-from employees e
-join dept_emp de
-on e.emp_no = de.emp_no
-where e.emp_no <= 10020
-group by e.emp_no
-order by e.emp_no;
+insert into emp_manager
+select u.*
 
-select e.emp_no as employee_ID, min(de.dept_no) as department_ID, 
+from
+(select a.* from
+	(select e.emp_no as employee_ID, min(de.dept_no) as department_ID, 
+		(select emp_no from dept_manager where emp_no=110022) as manager_ID
+	from employees e
+	join dept_emp de
+	on e.emp_no = de.emp_no
+	where e.emp_no <= 10020
+	group by e.emp_no
+	order by e.emp_no) as a
+
+union
+
+select b.* from 
+(select e.emp_no as employee_ID, min(de.dept_no) as department_ID, 
 	(select emp_no from dept_manager where emp_no=110039) as manager_ID
 from employees e
 join dept_emp de
@@ -325,7 +333,65 @@ on e.emp_no = de.emp_no
 where e.emp_no > 10020
 group by e.emp_no
 order by e.emp_no
-limit 20;
+limit 20) as b
+
+union
+
+select c.* from 
+(select e.emp_no as employee_ID, min(de.dept_no) as department_ID, 
+	(select emp_no from dept_manager where emp_no=110022) as manager_ID
+from employees e
+join dept_emp de
+on e.emp_no = de.emp_no
+where e.emp_no = 110039
+group by e.emp_no
+order by e.emp_no) as c
+
+union
+
+select d.* from 
+(select e.emp_no as employee_ID, min(de.dept_no) as department_ID, 
+	(select emp_no from dept_manager where emp_no=110039) as manager_ID
+from employees e
+join dept_emp de
+on e.emp_no = de.emp_no
+where e.emp_no = 110022
+group by e.emp_no
+order by e.emp_no) as d 
+) as u;
+
+select * from emp_manager;
+
+select t.emp_no, t.title, round(avg(
+(select s.salary from salaries s where t.emp_no = s.emp_no)
+),2) as avg_salary
+from 
+( select emp_no, title from titles where title in ('Staff', 'Engineer')) as t
+group by t.emp_no;
+
+#Views
+
+create view v_avg_salary_of_managers as
+select em.emp_no, round(avg(s.salary),2)
+from emp_manager em
+join salaries s
+on em.emp_no = s.emp_no
+group by em.emp_no;
+
+CREATE OR REPLACE VIEW v_avg_salary_of_managers AS
+    SELECT
+        ROUND(AVG(salary), 2)
+    FROM
+        salaries s
+            JOIN
+        dept_manager m ON s.emp_no = m.emp_no;
+        
+        
+
+        
+
+
+
 
 
 
