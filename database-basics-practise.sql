@@ -185,6 +185,156 @@ select
 from departments_dup
 order by dept_no asc;
 
+#JOINS Begins
+#setup 
+alter table departments_dup
+drop column dept_manager;
+
+alter table departments_dup
+change column dept_no dept_no CHAR(4) NULL;
+
+alter table departments_dup
+change column dept_name dept_name VARCHAR(40) NULL;
+
+truncate table departments_dup;
+select * from departments_dup;
+
+insert into departments_dup
+select * from departments;
+
+insert into departments_dup (dept_name)
+values ('Public Relations');
+
+insert into departments_dup (dept_no) values ('d010'), ('d011');
+
+DROP TABLE IF EXISTS dept_manager_dup;
+
+CREATE TABLE dept_manager_dup (
+  emp_no int(11) NOT NULL,
+  dept_no char(4) NULL,
+  from_date date NOT NULL,
+  to_date date NULL
+);
+
+INSERT INTO dept_manager_dup
+select * from dept_manager;
+
+INSERT INTO dept_manager_dup (emp_no, from_date)
+VALUES(999904, '2017-01-01'),(999905, '2017-01-01'),(999906, '2017-01-01'),(999907, '2017-01-01');
+
+DELETE FROM dept_manager_dup
+WHERE
+dept_no = 'd001';
+
+select e.emp_no, e.first_name, e.last_name, dm.dept_no, dm.from_date
+from employees e
+join
+dept_manager dm
+on e.emp_no=dm.emp_no
+where e.last_name = 'Markovitch'
+order by dm.dept_no desc, e.emp_no;
+
+select e.emp_no, e.first_name, e.last_name, d.dept_no, e.hire_date
+from employees e, dept_manager d
+where e.emp_no = d.emp_no;
+
+set @@global.sql_mode := replace(@@global.sql_mode, 'ONLY_FULL_GROUP_BY', '');
+
+select e.emp_no, e.first_name, e.last_name, e.hire_date, t.title
+from employees e
+join titles t
+on e.emp_no = t.emp_no
+where e.first_name = 'Margareta' and e.last_name = 'Markovitch';
+
+select dm.emp_no, d.dept_no
+from dept_manager dm cross join departments d
+where d.dept_no = 'd009';
+
+select e.first_name, e.last_name, e.hire_date, t.title, dm.from_date, d.dept_name
+from dept_manager dm join employees e on dm.emp_no=e.emp_no
+join titles t on e.emp_no = t.emp_no
+join departments d on d.dept_no = dm.dept_no
+where t.title = 'Manager';
+
+select e.gender, count(d.emp_no)
+from dept_manager d 
+join employees e
+on d.emp_no = e.emp_no
+group by e.gender;
+
+#UNION
+SELECT
+    *
+FROM
+    (SELECT
+        e.emp_no,
+            e.first_name,
+            e.last_name,
+            NULL AS dept_no,
+            NULL AS from_date
+    FROM
+        employees e
+    WHERE
+        last_name = 'Denis'
+	UNION SELECT
+			NULL AS emp_no,
+            NULL AS first_name,
+            NULL AS last_name,
+            dm.dept_no,
+            dm.from_date
+    FROM
+        dept_manager dm) as a
+ORDER BY -a.emp_no DESC;
+
+#SUBQUERIES
+
+select * from dept_manager dm
+where dm.emp_no in 
+(
+	select e.emp_no from employees e
+    where e.hire_date between '1990-01-01' and '1995-01-01'
+);
+
+#CORELATED SUBQUERIES
+
+select * from employees e
+where exists (select * from titles t where title = 'Assistant Engineer' and e.emp_no = t.emp_no);
+
+#NESTED Subqueries
+DROP TABLE IF EXISTS emp_manager;
+CREATE TABLE emp_manager (
+   emp_no INT(11) NOT NULL,
+   dept_no CHAR(4) NULL,
+   manager_no INT(11) NOT NULL
+);
+
+select e.emp_no as employee_ID, min(de.dept_no) as department_ID, 
+	(select emp_no from dept_manager where emp_no=110022) as manager_ID
+from employees e
+join dept_emp de
+on e.emp_no = de.emp_no
+where e.emp_no <= 10020
+group by e.emp_no
+order by e.emp_no;
+
+select e.emp_no as employee_ID, min(de.dept_no) as department_ID, 
+	(select emp_no from dept_manager where emp_no=110039) as manager_ID
+from employees e
+join dept_emp de
+on e.emp_no = de.emp_no
+where e.emp_no > 10020
+group by e.emp_no
+order by e.emp_no
+limit 20;
+
+
+
+
+
+
+
+
+
 
 
 
