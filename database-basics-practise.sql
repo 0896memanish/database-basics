@@ -438,6 +438,19 @@ delimiter ;
 
 select emp_new_salary('Parto','Bamford');
 
+#Triggers
+delimiter $$
+create trigger emp_hire_trigger
+before insert on employees
+for each row
+begin 
+	if new.hire_date > date_format(sysdate, '%Y-%m-%d')
+    then
+		set new.hire_date = date_format(sysdate, '%Y-%m-%d');
+	end if;
+end $$
+delimiter ;
+
 
 
         
