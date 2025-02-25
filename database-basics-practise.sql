@@ -457,6 +457,44 @@ select * from salaries where salary > 89000;
 
 create index i_salary_composite on salaries (salary);
 
+#CASE
+
+select e.emp_no, e.first_name, e.last_name, 
+case
+	when d.emp_no IS NOT NULL then 'Manager'
+    else 'Employee'
+end as is_manager
+from employees e
+left join dept_manager d
+on e.emp_no = d.emp_no
+where e.emp_no > 109990;
+
+
+select e.emp_no, e.first_name, e.last_name, (max(s.salary) - min(s.salary)) as salary_hike,
+case
+	when max(s.salary) - min(s.salary) > 30000 then 'Hike is more than 30K'
+    else 'Minimal hike'
+end as is_hike_good_enough
+from employees e 
+join dept_manager d
+on e.emp_no = d.emp_no
+join salaries s 
+on d.emp_no = s.emp_no
+group by d.emp_no;
+
+select e.emp_no, e.first_name, e.last_name, 
+case 
+	when max(de.to_date) > sysdate() then 'Contract Active'
+    else 'Contract Inactive'
+end as current_employee
+from employees e 
+join dept_emp de
+on e.emp_no = de.emp_no
+group by e.emp_no
+limit 100;
+
+
+
 
 
 
