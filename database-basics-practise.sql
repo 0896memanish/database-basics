@@ -387,6 +387,58 @@ CREATE OR REPLACE VIEW v_avg_salary_of_managers AS
         dept_manager m ON s.emp_no = m.emp_no;
         
         
+#PROCEDURES
+
+delimiter $$
+create procedure avg_salary()
+begin
+	select avg(salary)
+    from salaries;
+end$$
+delimiter ;
+
+call avg_salary;
+
+drop procedure if exists emp_info;
+
+delimiter $$
+create procedure emp_info(in p_first_name VARCHAR(20), in p_last_name VARCHAR(20), out p_output INT)
+begin
+	select emp_no into p_output from employees where
+    first_name = p_first_name and last_name = p_last_name;
+end$$
+delimiter ;
+
+set @v_emp_no = 0;
+call emp_info('Parto', 'Bamford', @v_emp_no);
+select @v_emp_no;
+
+delimiter $$
+create function emp_new_salary(p_first_name VARCHAR(20), p_last_name VARCHAR(20))
+returns decimal(10,2) deterministic
+begin 
+declare v_salary decimal(10,2);
+declare v_max_from_date date;
+
+select max(s.from_date) into v_max_from_date 
+from employees e 
+join salaries s
+on e.emp_no = s.emp_no
+where e.first_name = p_first_name and e.last_name = p_last_name;
+
+select s.salary into v_salary 
+from employees e 
+join salaries s
+on e.emp_no = s.emp_no
+where e.first_name = p_first_name and e.last_name = p_last_name and s.from_date = v_max_from_date;
+
+return v_salary;
+end $$
+delimiter ;
+
+select emp_new_salary('Parto','Bamford');
+
+
 
         
 
