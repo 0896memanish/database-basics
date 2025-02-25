@@ -493,6 +493,59 @@ on e.emp_no = de.emp_no
 group by e.emp_no
 limit 100;
 
+#WINDOW Functions
+#Type RANKING WINDOW functions NON Aggregate
+
+select e.*, row_number() over (order by e.emp_no) as rankings
+from employees e
+join dept_manager d
+on e.emp_no = d.emp_no
+group by e.emp_no;
+
+select e.*, row_number() over (partition by e.first_name order by e.last_name asc) as sequence
+from employees e;
+
+#window function alternative syntax
+select e.*, row_number() over w as sequence
+from employees e
+window w as (partition by e.first_name order by e.last_name asc);
+
+#rank and dense_rank functions
+
+select emp_no, salary, rank() over (partition by emp_no order by salary) as rank_num
+from salaries
+where emp_no=10560;
+
+select emp_no, salary, dense_rank() over (partition by emp_no order by salary) as rank_num
+from salaries
+where emp_no=10560;
+
+#type NON RANKING Non Aggregate
+
+SELECT
+emp_no,
+    salary,
+    LAG(salary) OVER w AS previous_salary,
+    LEAD(salary) OVER w AS next_salary,
+    salary - LAG(salary) OVER w AS diff_salary_current_previous,
+LEAD(salary) OVER w - salary AS diff_salary_next_current
+FROM
+salaries
+    WHERE salary > 80000 AND emp_no BETWEEN 10500 AND 10600
+WINDOW w AS (PARTITION BY emp_no ORDER BY salary);
+
+
+SELECT
+emp_no,
+    salary,
+    LAG(salary) OVER w AS previous_salary,
+LAG(salary, 2) OVER w AS 1_before_previous_salary,
+LEAD(salary) OVER w AS next_salary,
+    LEAD(salary, 2) OVER w AS 1_after_next_salary
+FROM
+salaries
+WINDOW w AS (PARTITION BY emp_no ORDER BY salary)
+LIMIT 1000;
 
 
 
