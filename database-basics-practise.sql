@@ -451,6 +451,16 @@ begin
 end $$
 delimiter ;
 
+#INDEXES
+
+select * from salaries where salary > 89000;
+
+create index i_salary_composite on salaries (salary);
+
+
+
+
+
 
 
         
