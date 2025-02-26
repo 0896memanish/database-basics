@@ -558,6 +558,40 @@ from
 where a.rank_from_date = 1;
 
 
+#Common Table Expressions
+
+with cte as (select avg(salary) as avg_salary from salaries)
+select 
+	sum(
+		case
+			when s.salary > c.avg_salary then 1
+            else 0
+        end
+	) as female_salaries_above_average,
+    count(*) as total_female_employees
+from 
+salaries s
+join 
+employees e
+on s.emp_no = e.emp_no and e.gender = 'F'
+cross join
+cte c;
+
+
+
+with cte_avg_salary as (select avg(salary) as avg_salary from salaries),
+cte_male_highest_salary as 
+(
+	select e.emp_no, max(s.salary) as max_salary
+    from employees e join salaries s on e.emp_no = s.emp_no and e.gender='M'
+    group by e.emp_no
+)
+select sum(case when c1.max_salary < c2.avg_salary then 1 else 0 end) as male_highest_below_average, count(e.emp_no) as total_male_employees
+from employees e
+join cte_male_highest_salary c1 on e.emp_no=c1.emp_no
+cross join cte_avg_salary c2;
+
+
 
 
 
