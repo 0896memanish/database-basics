@@ -547,6 +547,20 @@ salaries
 WINDOW w AS (PARTITION BY emp_no ORDER BY salary)
 LIMIT 1000;
 
+#Aggregate window function examples
+
+select a.emp_no, a.salary, a.from_date, a.to_date
+from
+(
+	select s.emp_no, s.salary, s.from_date, s.to_date, dense_rank() over (partition by emp_no order by from_date) as rank_from_date
+	from salaries s
+) a
+where a.rank_from_date = 1;
+
+
+
+
+
 
 
 
