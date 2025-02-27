@@ -592,6 +592,26 @@ join cte_male_highest_salary c1 on e.emp_no=c1.emp_no
 cross join cte_avg_salary c2;
 
 
+#TEMPORARY TABLES that are available for only a session
+
+create temporary table m_highest_salaries
+select e.emp_no, max(s.salary) as max_salary 
+from employees e join salaries s on e.emp_no = s.emp_no and e.gender = 'M'
+group by e.emp_no
+limit 10;
+
+select * from m_highest_salaries;
+
+drop table m_highest_salaries;
+
+
+create temporary table dates 
+select 
+now(), date_sub(now(), interval 2 month) as two_monthe_earlier, date_sub(now(), interval -2 year) as two_year_ahead;
+
+select * from dates;
+
+
 
 
 
